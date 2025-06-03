@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">app</string>
+    <string name="lib_name">Application</string>
+    <string name="package_name">ru.purpln.app</string>
+</resources>
