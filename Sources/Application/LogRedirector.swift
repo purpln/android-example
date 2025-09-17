@@ -19,7 +19,7 @@ private func _pipe() throws -> Pipe {
 
 private func _close(_ descriptor: CInt) throws {
     guard close(descriptor) != -1 else {
-        throw LogRedirectorError.duplicate
+        throw LogRedirectorError.close
     }
 }
 
@@ -64,7 +64,14 @@ public class LogRedirector {
             while !Task.isCancelled {
                 let length = read(descriptor, &buffer, capacity)
                 
-                guard length >= 0 else { return }
+                guard length >= 0 else {
+                    if errno != EAGAIN && errno != EWOULDBLOCK {
+                        break
+                    }
+                    continue
+                }
+                
+                guard length > 0 else { continue }
                 
                 let chunk = buffer[0..<length]
                 

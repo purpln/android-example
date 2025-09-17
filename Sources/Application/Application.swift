@@ -1,29 +1,32 @@
+import Android
 import AndroidAssets
 import AndroidEntry
 import AndroidLog
 import NativeActivity
 
+@MainActor
 @main
-class Application: NativeActivityDelegate {
+class Application: @preconcurrency NativeActivityDelegate {
     let activity: NativeActivity
     
     init(activity: NativeActivity) {
         self.activity = activity
     }
     
-    func launched() {
+    func launch() {
         print("app is launched")
     }
     
-    func destroying() {
+    func destroy() {
         print("app is destroying")
     }
     
     func back() {
         Task { @MainActor [weak self] in
             do {
-                let asset = try Asset(name: "asset.txt").bytes
-                print(String(decoding: asset, as: UTF8.self))
+                let asset = try Asset(name: "document.txt").bytes
+                let string = String(decoding: asset, as: UTF8.self)
+                print(string)
             } catch {
                 print(error)
             }
@@ -42,6 +45,8 @@ extension Application {
         let application = Application(activity: activity)
         activity.delegate = application
         activity.run()
+        
+        exit(0)
     }
 }
 
