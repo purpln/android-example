@@ -13,5 +13,7 @@ let package = Package(name: "Application", products: [
         .product(name: "AndroidAssets", package: "android-assets"),
         .product(name: "AndroidLog", package: "android-log"),
         .product(name: "NativeActivity", package: "native-activity"),
+    ], linkerSettings: [
+        .linkedLibrary("android"),
     ]),
 ])
