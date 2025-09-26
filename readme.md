@@ -29,4 +29,4 @@
 
 1. Modify `build: aarch64` to `build: armv7 aarch64 x86_64` if you want to build all three architectures
 2. Add missing dependencies to `LIBRARIES` if you want to use Foundation library, for example. You can identify missing dependencies by checking for dlopen errors in `adb logcat`
-3. Finally, run `make push` and `make log`
+3. Finally, `make run` to build, archive, install, run and log application

@@ -1,11 +1,11 @@
-.PHONY: push run armv7 aarch64 x86_64 build manifest bundle compress sign keystore install uninstall log
+.PHONY: push launch armv7 aarch64 x86_64 build manifest bundle compress sign keystore install uninstall log
 
 CONFIGURATION ?= release
 TARGET ?= Application
 ARCHIVE ?= .build/archive
 TEMPORARY := .tmp
 
-LIBRARIES = swiftCore swift_Concurrency swift_StringProcessing swift_RegexParser swift_Builtin_float swift_math swiftAndroid dispatch BlocksRuntime
+LIBRARIES = swiftCore swift_Concurrency swift_StringProcessing swift_RegexParser swift_Builtin_float swift_math swiftAndroid dispatch BlocksRuntime swiftDispatch
 
 APK ?= result.apk
 PACKAGE ?= org.company.app
@@ -147,7 +147,7 @@ install:
 uninstall:
 	$(ADB) uninstall $(PACKAGE)
 
-run:
+launch:
 	$(ADB) shell am start -W -n $(PACKAGE)/android.app.NativeActivity
 
 log:
@@ -155,4 +155,6 @@ log:
 	@echo $(PID)
 	$(if $(PID),$(ADB) logcat --pid=$(PID),$(ADB) logcat | grep $(PACKAGE))
 
-push: build manifest bundle compress sign install run
+archive: build manifest bundle compress sign
+
+run: archive install launch log

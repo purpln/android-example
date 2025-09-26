@@ -4,9 +4,8 @@ import AndroidEntry
 import AndroidLog
 import NativeActivity
 
-@MainActor
 @main
-class Application: @preconcurrency NativeActivityDelegate {
+class Application: NativeActivityDelegate {
     let activity: NativeActivity
     
     init(activity: NativeActivity) {
@@ -34,6 +33,22 @@ class Application: @preconcurrency NativeActivityDelegate {
             try await Task.sleep(nanoseconds: 1_000_000_000)
             self?.activity.destroy()
         }
+    }
+    
+    func initialize(window: OpaquePointer?) {
+        print("initialize window")
+    }
+    
+    func terminate(window: OpaquePointer?) {
+        print("terminate window")
+    }
+    
+    func layout(window: OpaquePointer?, width: CInt, height: CInt) {
+        print("layout window: \(width)x\(height)")
+    }
+    
+    func animate() {
+        //draw frame
     }
 }
 
