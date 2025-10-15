@@ -9,9 +9,24 @@ SOURCES = .
 RESOURCES = Resources
 JAVA = Sources/Activity
 ACTIVITY = .Activity
-#android.app.NativeActivity
+#FOUNDATION = 1
 
-LIBRARIES = swiftCore swift_Concurrency swift_StringProcessing swift_RegexParser swift_Builtin_float swift_math swiftAndroid dispatch BlocksRuntime swiftDispatch swiftSynchronization
+#total apk size is 7.4mb without Foundation
+LIBRARIES = swiftCore swift_Concurrency swift_StringProcessing swift_RegexParser swift_Builtin_float swift_math swiftAndroid dispatch BlocksRuntime swiftDispatch swiftSynchronization swiftRegexBuilder swiftCxx swiftCxxStdlib swiftDistributed swiftObservation swift_Differentiation
+
+#total apk size is 36.5mb with Foundation
+ifeq ($(FOUNDATION), 1)
+LIBRARIES += Foundation FoundationEssentials FoundationInternationalization _FoundationICU FoundationNetworking FoundationXML
+endif
+
+ifndef JAVA
+hasCode=false
+ifndef ACTIVITY
+ACTIVITY = android.app.NativeActivity
+endif
+else
+hasCode=true
+endif
 
 APK ?= result.apk
 PACKAGE ?= org.company.app
@@ -114,8 +129,8 @@ build: aarch64
 
 manifest:
 	mkdir -p $(TEMPORARY)
-	package=$(PACKAGE) minSdkVersion=$(ANDROIDVERSION) targetSdkVersion=$(ANDROIDTARGET) library=$(TARGET) \
-	envsubst '$$package $$minSdkVersion $$targetSdkVersion $$library' < $(TEMPLATE) > $(TEMPORARY)/AndroidManifest.xml
+	package=$(PACKAGE) minSdkVersion=$(ANDROIDVERSION) targetSdkVersion=$(ANDROIDTARGET) java=$(hasCode) activity=$(ACTIVITY) library=$(TARGET) entry=android_main \
+	envsubst '$$package $$minSdkVersion $$targetSdkVersion $$java $$activity $$library $$entry' < $(TEMPLATE) > $(TEMPORARY)/AndroidManifest.xml
 
 bundle:
 	mkdir -p $(ARCHIVE)/assets
@@ -127,9 +142,11 @@ bundle:
 	mkdir -p $(TEMPORARY)/res/values
 	$(foreach value,$(VALUES),cp $(RESOURCES)/$(value) $(TEMPORARY)/res/values/$(value);)
 	
+ifdef JAVA
 	mkdir -p $(TEMPORARY)/classes
 	javac -d $(TEMPORARY)/classes -cp $(ANDROIDJAR) $(JAVA)/*.java
 	$(BUILD_TOOLS)/d8 --lib $(ANDROIDJAR) --min-api $(ANDROIDVERSION) $(TEMPORARY)/classes/org/company/app/*.class --output $(ARCHIVE)
+endif
 
 compress:
 	$(AAPT) package -f -F $(TEMPORARY)/processed.apk -I $(ANDROIDJAR) -M $(TEMPORARY)/AndroidManifest.xml -S $(TEMPORARY)/res -A $(ARCHIVE)/assets

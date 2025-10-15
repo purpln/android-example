@@ -17,9 +17,9 @@ private func _dispatch_main_queue_callback_4CF(_ msg: UnsafeMutableRawPointer?)
 @_silgen_name("_dispatch_get_main_queue_port_4CF")
 private func _dispatch_get_main_queue_port_4CF() -> CInt
 
-@_cdecl("ANativeActivity_onCreate")
+@_cdecl("android_main")
 @MainActor
-public func ANativeActivity_onCreate(
+public func android_main(
     _ activity: UnsafeMutablePointer<ANativeActivity>?,
     _ state: UnsafeMutableRawPointer?,
     _ length: UnsafeMutablePointer<size_t>?

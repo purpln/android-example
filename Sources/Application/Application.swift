@@ -129,7 +129,6 @@ final class Application: NativeActivityDelegate {
 }
 
 extension Application {
-    @MainActor
     static func main() throws {
         try LogRedirector.shared.redirectPrint()
         
