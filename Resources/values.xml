@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="label">app</string>
+    <string name="version">1.0.0</string>
+    <integer name="build">0</integer>
+</resources>
