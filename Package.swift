@@ -7,8 +7,8 @@ let package = Package(name: "Application", products: [
 ], dependencies: [
     .package(url: "https://github.com/purpln/android-assets.git", branch: "main"),
     .package(url: "https://github.com/purpln/android-log.git", branch: "main"),
-    .package(url: "https://github.com/purpln/native-activity.git", branch: "main"),
     .package(url: "https://github.com/purpln/java.git", branch: "main"),
+    .package(url: "https://github.com/purpln/native-activity.git", branch: "main"),
 ], targets: [
     .target(name: "Application", dependencies: [
         .product(name: "AndroidAssets", package: "android-assets"),
@@ -16,8 +16,6 @@ let package = Package(name: "Application", products: [
         .product(name: "Java", package: "java"),
         "Instance",
         "TranslationLayer",
-    ], linkerSettings: [
-        .linkedLibrary("android"),
     ]),
     .target(name: "Instance", dependencies: [
         .product(name: "AndroidLog", package: "android-log"),

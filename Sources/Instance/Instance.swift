@@ -1,6 +1,6 @@
 import AndroidLog
 import NativeActivity
-import ndk.native_activity
+import NDK.NativeActivity
 
 struct State {
     
@@ -14,21 +14,13 @@ public class Instance {
     private var queue: AInputQueue?
     private var window: ANativeWindow?
     private var running: Bool = true
-    public var delegate: NativeActivityDelegate?
+    public weak var delegate: NativeActivityDelegate?
     
     var state = ControllerState()
-    
-    var animating: Bool {
-        window != nil
-    }
     
     public init(_ activity: UnsafeMutablePointer<ANativeActivity>?) {
         self.activity = activity
         self.configuration.configure(with: activity?.pointee.assetManager)
-    }
-    
-    deinit {
-        
     }
     
     public func run() {
@@ -40,15 +32,8 @@ public class Instance {
             var events: CInt = 0
             
             repeat {
-                let animating = true //await self?.animating ?? false
-                
-                let timeout: CInt = animating ? 0 : -1
-                ALooper_pollOnce(timeout, nil, &events, &pointer)
-                
-                if animating {
-                    self?.animate()
-                }
-            } while true
+                ALooper_pollOnce(-1, nil, &events, &pointer)
+            } while await self?.running ?? false
             self?.destroyed()
         }
     }
@@ -62,12 +47,6 @@ public class Instance {
     private nonisolated func destroyed() {
         Task { @MainActor [weak self] in
             self?.delegate?.destroy()
-        }
-    }
-    
-    private nonisolated func animate() {
-        Task { @MainActor [weak self] in
-            self?.delegate?.animate()
         }
     }
     
@@ -158,11 +137,11 @@ extension Instance {
     }
     
     func onNativeWindowResized(_ window: ANativeWindow?) {
-        delegate?.layout(window: window)
+        
     }
     
     func onNativeWindowRedrawNeeded(_ window: ANativeWindow?) {
-        
+        delegate?.layout(window: window)
     }
     
     func onNativeWindowDestroyed(_ window: ANativeWindow?) {

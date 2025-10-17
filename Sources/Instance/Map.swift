@@ -1,6 +1,6 @@
 import AndroidLog
 import NativeActivity
-import ndk.native_activity
+import NDK.Input
 
 protocol InputEventDelegate: AnyObject {
     var state: ControllerState { get set }

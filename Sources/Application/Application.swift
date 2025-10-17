@@ -1,9 +1,8 @@
-import Android
 import AndroidAssets
 import AndroidLog
 import Instance
 import NativeActivity
-import ndk.native_window
+import NDK.NativeWindow
 
 @main
 final class Application: NativeActivityDelegate {
@@ -12,15 +11,17 @@ final class Application: NativeActivityDelegate {
     
     init() {
         ignoreDisplayCutout()
+        
+        Task { @MainActor in
+            print("main thread works!")
+        }
+        
         do {
             let asset = try Asset(name: "document.txt").bytes
             let string = String(decoding: asset, as: UTF8.self)
-            print("document form assets:", string)
+            print("document from assets:", string)
         } catch {
             print(error)
-        }
-        Task { @MainActor in
-            print("main thread works!")
         }
     }
     
@@ -52,10 +53,7 @@ final class Application: NativeActivityDelegate {
         let height = ANativeWindow_getHeight(window)
         
         print("layout window: \(width)x\(height)")
-    }
-    
-    func animate() {
-        //draw frame
+        dummyRender(window: window)
     }
     
     func touchesBegan(window: OpaquePointer?, touches: [(id: CInt, x: Float, y: Float, pressure: Float)]) {
@@ -132,10 +130,11 @@ final class Application: NativeActivityDelegate {
 }
 
 extension Application {
+    static let application = Application()
+    
     static func main() throws {
         try LogRedirector.shared.redirectPrint()
         
-        let application = Application()
         _instance?.delegate = application
         _instance?.run()
     }
