@@ -40,9 +40,15 @@ public class Instance {
             var events: CInt = 0
             
             repeat {
-                let timeout: CInt = await self?.animating ?? false ? 0 : -1
+                let animating = true //await self?.animating ?? false
+                
+                let timeout: CInt = animating ? 0 : -1
                 ALooper_pollOnce(timeout, nil, &events, &pointer)
-            } while await self?.running ?? false
+                
+                if animating {
+                    self?.animate()
+                }
+            } while true
             self?.destroyed()
         }
     }
@@ -56,6 +62,12 @@ public class Instance {
     private nonisolated func destroyed() {
         Task { @MainActor [weak self] in
             self?.delegate?.destroy()
+        }
+    }
+    
+    private nonisolated func animate() {
+        Task { @MainActor [weak self] in
+            self?.delegate?.animate()
         }
     }
     
@@ -146,7 +158,7 @@ extension Instance {
     }
     
     func onNativeWindowResized(_ window: ANativeWindow?) {
-        
+        delegate?.layout(window: window)
     }
     
     func onNativeWindowRedrawNeeded(_ window: ANativeWindow?) {
@@ -154,8 +166,10 @@ extension Instance {
     }
     
     func onNativeWindowDestroyed(_ window: ANativeWindow?) {
-        ANativeWindow_release(window)
         delegate?.terminate(window: window)
+        ANativeWindow_release(window)
+        
+        self.window = nil
     }
     
     func onInputQueueCreated(_ queue: AInputQueue?) {
@@ -167,10 +181,7 @@ extension Instance {
     }
     
     func onContentRectChanged(_ rect: ARect?) {
-        let width = ANativeWindow_getWidth(window)
-        let height = ANativeWindow_getHeight(window)
         
-        delegate?.layout(window: window, width: width, height: height)
     }
     
     func onConfigurationChanged() {

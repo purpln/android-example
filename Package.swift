@@ -7,9 +7,8 @@ let package = Package(name: "Application", products: [
 ], dependencies: [
     .package(url: "https://github.com/purpln/android-assets.git", branch: "main"),
     .package(url: "https://github.com/purpln/android-log.git", branch: "main"),
-    //.package(url: "https://github.com/purpln/native-activity.git", branch: "main"),
+    .package(url: "https://github.com/purpln/native-activity.git", branch: "main"),
     .package(url: "https://github.com/purpln/java.git", branch: "main"),
-    .package(path: "~/github/native-activity"),
 ], targets: [
     .target(name: "Application", dependencies: [
         .product(name: "AndroidAssets", package: "android-assets"),

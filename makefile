@@ -8,7 +8,7 @@ TEMPLATE = template.xml
 SOURCES = .
 RESOURCES = Resources
 JAVA = Sources/Activity
-ACTIVITY = .Activity
+ACTIVITY = local.app.Activity
 #FOUNDATION = 1
 
 #total apk size is 7.4mb without Foundation
@@ -111,7 +111,7 @@ export TOOLCHAINS
 define compile
 swift build -c $(CONFIGURATION) --package-path $(SOURCES) --swift-sdk $(1)
 mkdir -p $(ARCHIVE)/lib/$(2)
-cp .build/$(CONFIGURATION)/lib$(TARGET).so $(ARCHIVE)/lib/$(2)/lib$(TARGET).so
+cp .build/$(CONFIGURATION)/lib$(TARGET).so $(ARCHIVE)/lib/$(2)/libmain.so
 cp $(ANDROIDNDK)/toolchains/llvm/prebuilt/darwin-x86_64/sysroot/usr/lib/$(3)/libc++_shared.so $(ARCHIVE)/lib/$(2)/libc++_shared.so
 $(foreach library,$(LIBRARIES), cp $(SDK)/swift-android/swift-resources/usr/lib/$(4)/android/lib$(library).so $(ARCHIVE)/lib/$(2)/lib$(library).so;)
 endef
@@ -129,8 +129,8 @@ build: aarch64
 
 manifest:
 	mkdir -p $(TEMPORARY)
-	package=$(PACKAGE) minSdkVersion=$(ANDROIDVERSION) targetSdkVersion=$(ANDROIDTARGET) java=$(hasCode) activity=$(ACTIVITY) library=$(TARGET) entry=android_main \
-	envsubst '$$package $$minSdkVersion $$targetSdkVersion $$java $$activity $$library $$entry' < $(TEMPLATE) > $(TEMPORARY)/AndroidManifest.xml
+	package=$(PACKAGE) minSdkVersion=$(ANDROIDVERSION) targetSdkVersion=$(ANDROIDTARGET) hasCode=$(hasCode) activity=$(ACTIVITY) library=main entry=android_main \
+	envsubst '$$package $$minSdkVersion $$targetSdkVersion $$hasCode $$activity $$library $$entry' < $(TEMPLATE) > $(TEMPORARY)/AndroidManifest.xml
 
 bundle:
 	mkdir -p $(ARCHIVE)/assets
@@ -143,9 +143,9 @@ bundle:
 	$(foreach value,$(VALUES),cp $(RESOURCES)/$(value) $(TEMPORARY)/res/values/$(value);)
 	
 ifdef JAVA
-	mkdir -p $(TEMPORARY)/classes
-	javac -d $(TEMPORARY)/classes -cp $(ANDROIDJAR) $(JAVA)/*.java
-	$(BUILD_TOOLS)/d8 --lib $(ANDROIDJAR) --min-api $(ANDROIDVERSION) $(TEMPORARY)/classes/org/company/app/*.class --output $(ARCHIVE)
+	mkdir -p $(TEMPORARY)/java
+	javac -d $(TEMPORARY)/java -cp $(ANDROIDJAR) $(JAVA)/*.java
+	$(BUILD_TOOLS)/d8 --lib $(ANDROIDJAR) --min-api $(ANDROIDVERSION) $(TEMPORARY)/java/local/app/*.class --output $(ARCHIVE)
 endif
 
 compress:

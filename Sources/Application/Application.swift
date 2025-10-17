@@ -38,16 +38,19 @@ final class Application: NativeActivityDelegate {
         backAction()
     }
     
-    func initialize(window: OpaquePointer?) {
+    func initialize(window: ANativeWindow?) {
         print("initialize window")
         dummyRender(window: window)
     }
     
-    func terminate(window: OpaquePointer?) {
+    func terminate(window: ANativeWindow?) {
         print("terminate window")
     }
     
-    func layout(window: OpaquePointer?, width: CInt, height: CInt) {
+    func layout(window: ANativeWindow?) {
+        let width = ANativeWindow_getWidth(window)
+        let height = ANativeWindow_getHeight(window)
+        
         print("layout window: \(width)x\(height)")
     }
     

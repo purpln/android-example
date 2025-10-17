@@ -1,4 +1,4 @@
-package org.company.app;
+package local.app;
 
 import android.app.NativeActivity;
 import android.os.Bundle;

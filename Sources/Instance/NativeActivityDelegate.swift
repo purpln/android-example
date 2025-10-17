@@ -15,7 +15,7 @@ public protocol NativeActivityDelegate: AnyObject {
     
     func initialize(window: OpaquePointer?)
     func terminate(window: OpaquePointer?)
-    func layout(window: OpaquePointer?, width: CInt, height: CInt)
+    func layout(window: OpaquePointer?)
     
     func touchesBegan(window: OpaquePointer?, touches: [(id: CInt, x: Float, y: Float, pressure: Float)])
     func touchesMoved(window: OpaquePointer?, touches: [(id: CInt, x: Float, y: Float, pressure: Float)])
@@ -50,7 +50,7 @@ public extension NativeActivityDelegate {
     
     func initialize(window: OpaquePointer?) {}
     func terminate(window: OpaquePointer?) {}
-    func layout(window: OpaquePointer?, width: CInt, height: CInt) {}
+    func layout(window: OpaquePointer?) {}
     
     func touchesBegan(window: OpaquePointer?, touches: [(id: CInt, x: Float, y: Float, pressure: Float)]) {}
     func touchesMoved(window: OpaquePointer?, touches: [(id: CInt, x: Float, y: Float, pressure: Float)]) {}
